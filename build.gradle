@@ -54,6 +54,8 @@ ext {
     retrofitVersion = '2.8.1'
     retrofitKotlinxSerializationConverterVersion = '0.8.0'
     okhttpVersion = '4.9.0'
+    // Facebook Stetho
+    facebookStethoVersion = '1.6.0'
 
     // Glide Image Loader
     glideVersion = '4.11.0'
