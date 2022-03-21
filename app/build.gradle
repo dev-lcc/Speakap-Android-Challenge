@@ -22,12 +22,30 @@ android {
     buildTypes {
         debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    productFlavors {
+        flavorDimensions "default"
+        prod {
+            // TODO:: When multiple environments are setup(i.e. PROD Environment), change this value accordingly
+            buildConfigField "String", "REST_API_URL_ENDPOINT", "\"https://www.rijksmuseum.nl/api/\""
+            // TODO:: MUST BE Extracted from a property file(i.e. local.properties) which is not included in repository
+            // For the sake of simplicity, I hardcode the API key as-is
+            buildConfigField "String", "APIK_KEY_RIJKSMUSUEM", "\"dvFaFG86\""
+        }
+        dev {
+            applicationIdSuffix ".dev"
+            // TODO:: When multiple environments are setup(i.e. DEV Environment), change this value accordingly
+            buildConfigField "String", "REST_API_URL_ENDPOINT", "\"https://www.rijksmuseum.nl/api/\""
+            // TODO:: MUST BE Extracted from a property file(i.e. local.properties) which is not included in repository
+            // For the sake of simplicity, I hardcode the API key as-is
+            buildConfigField "String", "APIK_KEY_RIJKSMUSUEM", "\"dvFaFG86\""
         }
     }
 
@@ -52,8 +70,8 @@ android {
     }
 
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     packagingOptions {
@@ -70,6 +88,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation project(':domain')
 
     // Jetbrains Kotlin Dependencies
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
