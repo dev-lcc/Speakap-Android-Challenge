@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Labels(
-    val title: String,
-    val makerLine: String,
-    val description: String
+    val title: String? = null,
+    val makerLine: String? = null,
+    val description: String? = null,
 ) : Parcelable

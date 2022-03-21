@@ -5,6 +5,6 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Dating(
-    val presentingDate: String,
-    val period: Int
+    val presentingDate: String? = null,
+    val period: Int? = null
 ) : Parcelable

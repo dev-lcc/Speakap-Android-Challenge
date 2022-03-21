@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class WebImg(
-    val url: String,
-    val width: Int,
-    val height: Int
+    val url: String? = null,
+    val width: Int? = null,
+    val height: Int? = null,
 ) : Parcelable
