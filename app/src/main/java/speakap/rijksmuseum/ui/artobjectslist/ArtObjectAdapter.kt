@@ -1,12 +1,13 @@
 package speakap.rijksmuseum.ui.artobjectslist
 
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
-import com.squareup.picasso.Picasso
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import speakap.rijksmuseum.domain.ArtObject
 
-class ArtObjectAdapter(val picasso: Picasso, val onCilck : (objectNumber : String) -> Unit) : RecyclerView.Adapter<ArtObjectViewHolder>() {
+class ArtObjectAdapter(
+    val onClick : (objectNumber : String) -> Unit
+) : RecyclerView.Adapter<ArtObjectViewHolder>() {
 
     override fun getItemCount(): Int = data.size
 
@@ -16,7 +17,7 @@ class ArtObjectAdapter(val picasso: Picasso, val onCilck : (objectNumber : Strin
             parent: ViewGroup,
             viewType: Int
     ): ArtObjectViewHolder {
-        return ArtObjectViewHolder(parent, picasso, onCilck)
+        return ArtObjectViewHolder(parent, onClick)
     }
 
     override fun onBindViewHolder(

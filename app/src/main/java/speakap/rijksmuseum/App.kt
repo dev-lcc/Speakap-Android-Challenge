@@ -1,34 +1,25 @@
 package speakap.rijksmuseum
 
-import android.app.Activity
 import android.app.Application
-import speakap.rijksmuseum.di.DaggerApplicationComponent
-import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 import timber.log.Timber
-import javax.inject.Inject
 
-class App : Application(), HasActivityInjector {
-
-    @Inject
-    lateinit var activityInjector: DispatchingAndroidInjector<Activity>
+class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
 
+        // Init Koin Dependency here...
+        startKoin {
+            androidContext(applicationContext)
+        }
+
         Timber.plant(Timber.DebugTree())
 
-        initDagger()
     }
 
-    private fun initDagger() {
-        DaggerApplicationComponent
-                .builder()
-                .create(this)
-                .inject(this)
+    companion object {
+        private val TAG = App::class.java.simpleName
     }
-
-    override fun activityInjector(): AndroidInjector<Activity> = activityInjector
-
 }

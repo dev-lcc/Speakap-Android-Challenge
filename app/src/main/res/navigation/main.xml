@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    app:startDestination="@+id/fragmentArtObjects"
+    >
+
+    <fragment
+        android:id="@+id/fragmentArtObjects"
+        android:name="speakap.rijksmuseum.ui.artobjectslist.ArtObjectsFragment"
+        tools:layout="@layout/fragment_art_objects">
+
+        <action
+            android:id="@+id/action_fragmentArtObjects_to_fragmentArtObjectDetail"
+            app:destination="@+id/fragmentArtObjectDetail" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragmentArtObjectDetail"
+        android:name="speakap.rijksmuseum.artobjectdetail.ArtObjectDetailFragment"
+        tools:layout="@layout/fragment_art_object_detail">
+
+        <action
+            android:id="@+id/action_fragmentArtObjectDetail_to_fragmentArtObjectQuery"
+            app:destination="@+id/fragmentArtObjectQuery" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragmentArtObjectQuery"
+        android:name="speakap.rijksmuseum.ui.artobjectquery.ArtObjectQueryFragment"
+        tools:layout="@layout/fragment_art_object_query">
+
+    </fragment>
+
+</navigation>

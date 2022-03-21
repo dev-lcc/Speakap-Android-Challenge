@@ -1,64 +1,168 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+    id 'kotlin-kapt'
+    id 'kotlinx-serialization'
+}
 
 android {
-    compileSdkVersion 29
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
     defaultConfig {
         applicationId "speakap.rijksmuseum"
-        minSdkVersion 23
-        targetSdkVersion 29
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    kapt {
+        generateStubs = true
+    }
+
+    // https://stackoverflow.com/a/48988779/11419056
+    // * Go to Build, Execution, Deployment > Compiler > Kotlin Compiler BUT Other Settings > Kotlin compiler
+    // * Change the Target JVM version to 1.8, then Apply
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += [
+                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
+                "-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi"
+        ]
+    }
+
+    viewBinding {
+        enabled = true
+    }
+
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+
+    packagingOptions {
+        exclude 'META-INF/main.kotlin_module'
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            returnDefaultValues = true
         }
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    testImplementation 'junit:junit:4.13'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    // Jetbrains Kotlin Dependencies
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version"
 
-    implementation "com.android.support:design:27.1.1"
-    implementation "com.android.support:appcompat-v7:27.1.1"
-    implementation 'com.android.support.constraint:constraint-layout:2.0.3'
+    // Dependencies for local unit tests
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "androidx.arch.core:core-common:$androidXCoreTesting"
+    testImplementation "androidx.arch.core:core-runtime:$androidXCoreTesting"
+    testImplementation "androidx.arch.core:core-testing:$androidXCoreTesting"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "io.mockk:mockk:$mockKVersion"
 
-    //Dagger
-    implementation "com.google.dagger:dagger:2.16"
-    implementation "com.google.dagger:dagger-android:2.16"
-    implementation "com.google.dagger:dagger-android-support:2.16"
-    kapt "com.google.dagger:dagger-compiler:2.16"
-    kapt "com.google.dagger:dagger-android-processor:2.16"
+    // Android Testing Support Library's runner and rules
+    androidTestImplementation "androidx.test:runner:$androidXTest"
+    androidTestImplementation "androidx.test:rules:$androidXTest"
+    androidTestImplementation "org.mockito:mockito-android:$mockitoVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidXTestExt"
+    // mockk.io - https://github.com/mockk/mockk/issues/281
+    androidTestImplementation("io.mockk:mockk-android:$mockKVersion") {
+        exclude module: 'objenesis'
+    }
 
-    //Rxjava
-    implementation "io.reactivex.rxjava2:rxjava:2.1.13"
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    implementation 'com.hannesdorfmann.mosby3:mvp:3.1.0'
+    // Dependency Injection Framework
+    // Koin Dependency Injection
+    // Koin for Kotlin
+    implementation "io.insert-koin:koin-core:$koinVersion"
+    // Koin for Android
+    implementation "io.insert-koin:koin-android:$koinVersion"
+    // Koin AndroidX Scope feature
+    implementation "io.insert-koin:koin-androidx-scope:$koinVersion"
+    // Koin AndroidX ViewModel feature
+    implementation "io.insert-koin:koin-androidx-viewmodel:$koinVersion"
+    // Koin Test
+    testImplementation("io.insert-koin:koin-test:$koinVersion") {
+        exclude group: 'org.mockito'
+    }
 
-    //Networking
-    implementation "com.squareup.retrofit2:retrofit:2.4.0"
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-    implementation 'com.google.code.gson:gson:2.8.6'
-    implementation "com.squareup.retrofit2:converter-gson:2.4.0"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:2.4.0"
-    
-    implementation 'com.jakewharton.timber:timber:4.7.0'
+    // AndroidX
+    implementation "androidx.core:core:$androidXCoreVersion"
+    implementation "androidx.core:core-ktx:$androidXCoreVersion"
+    implementation "androidx.annotation:annotation:$androidXAnnotationVersion"
+    // AndroidX Activity
+    implementation "androidx.activity:activity:$androidXActivity"
+    implementation "androidx.activity:activity-ktx:$androidXActivity"
+    // AndroidX Fragment
+    implementation "androidx.fragment:fragment-ktx:$androidXFragmentVersion"
+    // Material Components
+    implementation "com.google.android.material:material:$rootProject.androidMaterialComponentsVersion"
+    // UI Components
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$androidXRecyclerViewVersion"
+    implementation "androidx.recyclerview:recyclerview:$androidXRecyclerViewVersion"
+    implementation "androidx.cardview:cardview:$androidXCardViewVersion"
+    implementation "androidx.appcompat:appcompat:$androidXAppCompatVersion"
+    implementation "androidx.appcompat:appcompat-resources:$androidXAppCompatVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
 
-    //Butterknife
-    implementation 'com.jakewharton:butterknife:8.8.1'
-    kapt 'com.jakewharton:butterknife-compiler:8.8.1'
+    // AndroidX Navigation
+    implementation "androidx.navigation:navigation-fragment:$androidXNavigationVersion"
+    implementation "androidx.navigation:navigation-fragment-ktx:$androidXNavigationVersion"
+    implementation "androidx.navigation:navigation-ui:$androidXNavigationVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$androidXNavigationVersion"
 
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    // AndroidX Lifecycle
+    kapt "androidx.lifecycle:lifecycle-common-java8:$androidXLifecycleVersion"
+    /*kapt "androidx.lifecycle:lifecycle-compiler:$androidXLifecycleVersion"*/
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidXLifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$androidXLifecycleVersion"
 
+    // Coroutine
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+
+    // Coroutine Flow Binding
+    implementation "io.github.reactivecircus.flowbinding:flowbinding-android:$flowbindingVersion"
+    implementation "io.github.reactivecircus.flowbinding:flowbinding-core:$flowbindingVersion"
+    implementation "io.github.reactivecircus.flowbinding:flowbinding-activity:$flowbindingVersion"
+    implementation "io.github.reactivecircus.flowbinding:flowbinding-appcompat:$flowbindingVersion"
+    implementation "io.github.reactivecircus.flowbinding:flowbinding-lifecycle:$flowbindingVersion"
+    implementation "io.github.reactivecircus.flowbinding:flowbinding-recyclerview:$flowbindingVersion"
+    implementation "io.github.reactivecircus.flowbinding:flowbinding-swiperefreshlayout:$flowbindingVersion"
+
+    // Glide Image Loader
+    implementation "com.github.bumptech.glide:glide:$glideVersion"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
+
+    // Timber Log
+    implementation "com.jakewharton.timber:timber:$timberLogVersion"
+
+    // ViewBindingPropertyDelegate
+    implementation "com.github.kirich1409:viewbindingpropertydelegate-noreflection:$viewbindingpropertydelegateVersion"
 
 }

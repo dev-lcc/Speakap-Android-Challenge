@@ -1,53 +1,49 @@
 package speakap.rijksmuseum.commons
 
-import android.content.Context
 import android.os.Bundle
-import android.support.annotation.LayoutRes
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
-import butterknife.ButterKnife
-import butterknife.Unbinder
-import com.hannesdorfmann.mosby3.mvp.MvpFragment
-import dagger.android.support.AndroidSupportInjection
-import javax.inject.Inject
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.cancelChildren
 
-abstract class BaseFragment<V : BaseView, P : BasePresenter<V>> : MvpFragment<V, P>(), BaseView {
+open class BaseFragment: Fragment() {
+    // Top-level Nav Controller Instance
+    protected val appNavController: NavController by lazy { findNavController() }
 
-    @Inject
-    lateinit var basePresenter: P
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    private lateinit var unbinder: Unbinder
-
-    override fun createPresenter(): P {
-        return basePresenter
+        activity?.onBackPressedDispatcher
+            ?.addCallback(
+                owner = this@BaseFragment,
+                enabled = enableBackPressedCallback(),
+                onBackPressed = onBackPressedCallback()
+            )
     }
 
-    override fun onAttach(context: Context?) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
+    /**
+     * Helper functions to handle on back pressed callback
+     * - Override this and set to `true` if you want the implementing Fragment to enable onBackPressedCallback implementation
+     */
+    open fun enableBackPressedCallback(): Boolean = false
 
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(layoutId(), container, false)
-        unbinder = ButterKnife.bind(this, view)
-        return view
-    }
+    /**
+     * Override this and set to `true` if you want the implementing Fragment to have its own onBackPressedCallback implementation
+     */
+    open fun onBackPressedCallback(): OnBackPressedCallback.() -> Unit = {}
 
     override fun onDestroyView() {
-        unbinder.unbind()
         super.onDestroyView()
+        // Cancel Coroutine Flow Subscriptions launched on `lifecycleScope`
+        lifecycleScope.coroutineContext.cancelChildren()
     }
 
-    @LayoutRes
-    abstract fun layoutId(): Int
-
-    override fun showError() {
-        Toast.makeText(context, "An error occurred", Toast.LENGTH_SHORT).show()
-    }
+    /**
+     * Log TAG
+     */
+    protected val TAG = this::class.java.simpleName
 }

@@ -1,10 +1,56 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.DayNight.ActionBar" >
+        <item name="colorPrimary">@android:color/white</item>
+    </style>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Theme.CollapsingToolbar" parent="Widget.Design.CollapsingToolbar">
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="expandedTitleMarginTop">48dp</item>
+        <item name="android:clipToPadding">true</item>
+        <item name="titleEnabled">true</item>
+        <item name="expandedTitleGravity">left|bottom</item>
+        <item name="collapsedTitleGravity">center_horizontal</item>
+        <item name="collapsedTitleTextAppearance">@style/Theme.AppBar.TitleTextAppearance.Collapsed</item>
+        <item name="expandedTitleTextAppearance">@style/Theme.AppBar.TitleTextAppearance.Expanded</item>
+        <item name="layout_scrollFlags">scroll|exitUntilCollapsed|snap</item>
+    </style>
+
+    <style name="Theme.Toolbar.UnderCollapsing" parent="Widget.AppCompat.Toolbar">
+        <item name="android:layout_gravity">top</item>
+        <item name="android:textAlignment">gravity</item>
+        <item name="android:clipToPadding">true</item>
+        <item name="contentInsetStartWithNavigation">0dp</item>
+        <item name="contentInsetStart">0dp</item>
+        <item name="navigationIconTint">@color/colorAccent</item>
+        <!--<item name="titleTextColor">@color/red_a700</item>-->
+        <item name="layout_collapseMode">pin</item>
+        <item name="popupTheme">@style/AppTheme.PopupOverlay</item>
+    </style>
+
+    <style name="Theme.AppBar.TitleTextAppearance.Collapsed" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textColor">?colorPrimaryVariant</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Theme.AppBar.TitleTextAppearance.Expanded" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
+        <item name="android:textColor">?colorPrimaryVariant</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

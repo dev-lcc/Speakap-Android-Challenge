@@ -1,24 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.fragment.app.FragmentContainerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/mainToolbarForActivity"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?colorPrimary"
-        android:minHeight="?attr/actionBarSize"
-        app:title="@string/app_name" />
-
-
-    <FrameLayout
-        android:id="@+id/activityMainFrameLayoutContainerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ui.MainActivity" />
-
-</LinearLayout>
+    android:id="@+id/navHostFragmentApp"
+    android:name="androidx.navigation.fragment.NavHostFragment"
+    app:navGraph="@navigation/main"
+    app:defaultNavHost="true"
+    />
