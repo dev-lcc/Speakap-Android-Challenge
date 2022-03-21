@@ -1,0 +1,86 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+android {
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += [
+                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xuse-experimental=kotlinx.coroutines.FlowPreview",
+                "-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi"
+        ]
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        exclude 'META-INF/main.kotlin_module'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation project(':domain')
+
+    // Jetbrains Kotlin Dependencies
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    // Dependencies for local unit tests
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "androidx.arch.core:core-common:$androidXCoreTesting"
+    testImplementation "androidx.arch.core:core-runtime:$androidXCoreTesting"
+    testImplementation "androidx.arch.core:core-testing:$androidXCoreTesting"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "io.mockk:mockk:$mockKVersion"
+
+    // Dependency Injection Framework
+    // Koin Dependency Injection
+    // Koin for Kotlin
+    implementation "io.insert-koin:koin-core:$koinVersion"
+    // Koin for Android
+    implementation "io.insert-koin:koin-android:$koinVersion"
+    // Koin AndroidX Scope feature
+    implementation "io.insert-koin:koin-androidx-scope:$koinVersion"
+    // Koin AndroidX ViewModel feature
+    implementation "io.insert-koin:koin-androidx-viewmodel:$koinVersion"
+    // Koin Test
+    testImplementation("io.insert-koin:koin-test:$koinVersion") {
+        exclude group: 'org.mockito'
+    }
+
+    // Coroutine
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+
+    // Timber Log
+    implementation "com.jakewharton.timber:timber:$timberLogVersion"
+}

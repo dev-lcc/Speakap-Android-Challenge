@@ -4,6 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Collection(
-    val artObjects: ArrayList<ArtObject>
+data class ArtObjectCollection(
+    val count: Int? = null,
+    val artObjects: List<ArtObject> = listOf(),
 ) : Parcelable
