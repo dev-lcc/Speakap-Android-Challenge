@@ -1,10 +1,14 @@
 package speakap.rijksmuseum.data.repository.arts
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import speakap.rijksmueum.domain.datamodels.art.ArtObjectCollection
 import speakap.rijksmueum.domain.datamodels.art.ArtObjectDetail
+import speakap.rijksmuseum.datasource.remote.ArtsRestApiDatasource
 
 class ArtsRepository(
     // TODO:: Remote Datasource
+    private val remoteDatasource: ArtsRestApiDatasource,
     // Include other Datasource in here(Local Database, etc.)
 ) {
 
@@ -12,15 +16,34 @@ class ArtsRepository(
         offset: Int,
         limit: Int,
     ): ArtObjectCollection {
-        // TODO:: getArtObjectCollections()
-        TODO("Not yet implemented...")
+
+        // Perform Fetch from Remote Datasource
+        val response = withContext(Dispatchers.IO) {
+            remoteDatasource.getArtObjectCollection(
+                offset = offset,
+                limit = limit,
+            )
+        }
+
+        // TODO:: For caching OR local persistence, it can be done here...
+
+        return response
     }
 
-    suspend fun getArtObject(
-        objectId: String
+    suspend fun getArtObjectDetail(
+        objectNumber: String
     ): ArtObjectDetail {
-        // TODO:: getArtObject()
-        TODO("Not yet implemented...")
+
+        // Perform Fetch from Remote Datasource
+        val response = withContext(Dispatchers.IO) {
+            remoteDatasource.getArtObjectDetail(
+                objectNumber = objectNumber
+            )
+        }
+
+        // TODO:: For caching OR local persistence, it can be done here...
+
+        return response
     }
 
 }
