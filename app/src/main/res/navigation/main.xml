@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/fragmentArtObjectDetail"
-        android:name="speakap.rijksmuseum.artobjectdetail.ArtObjectDetailFragment"
+        android:name="speakap.rijksmuseum.ui.artobjectdetail.ArtObjectDetailFragment"
         tools:layout="@layout/fragment_art_object_detail">
 
         <action

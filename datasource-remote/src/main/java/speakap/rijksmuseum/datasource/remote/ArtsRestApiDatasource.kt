@@ -1,10 +1,10 @@
 package speakap.rijksmuseum.datasource.remote
 
 import retrofit2.HttpException
-import speakap.rijksmueum.domain.datamodels.art.ArtObjectCollection
-import speakap.rijksmueum.domain.datamodels.art.ArtObjectDetail
-import speakap.rijksmuseum.datasource.remote.retrofit.dto.art.mapper.ArtObjectCollectionResponseToDomainMapper
-import speakap.rijksmuseum.datasource.remote.retrofit.dto.art.mapper.ArtObjectDetailResponseToDomainMapper
+import speakap.rijksmueum.domain.datamodels.arts.ArtObjectCollection
+import speakap.rijksmueum.domain.datamodels.arts.ArtObjectDetail
+import speakap.rijksmuseum.datasource.remote.retrofit.dto.arts.mapper.ArtObjectCollectionResponseToDomainMapper
+import speakap.rijksmuseum.datasource.remote.retrofit.dto.arts.mapper.ArtObjectDetailResponseToDomainMapper
 import speakap.rijksmuseum.datasource.remote.retrofit.services.ArtsRetrofitService
 
 class ArtsRestApiDatasource(

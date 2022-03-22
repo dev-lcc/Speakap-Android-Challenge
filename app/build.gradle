@@ -36,7 +36,7 @@ android {
             buildConfigField "String", "REST_API_URL_ENDPOINT", "\"https://www.rijksmuseum.nl/api/\""
             // TODO:: MUST BE Extracted from a property file(i.e. local.properties) which is not included in repository
             // For the sake of simplicity, I hardcode the API key as-is
-            buildConfigField "String", "APIK_KEY_RIJKSMUSUEM", "\"dvFaFG86\""
+            buildConfigField "String", "API_KEY_RIJKSMUSUEM", "\"dvFaFG86\""
         }
         dev {
             applicationIdSuffix ".dev"
@@ -44,7 +44,7 @@ android {
             buildConfigField "String", "REST_API_URL_ENDPOINT", "\"https://www.rijksmuseum.nl/api/\""
             // TODO:: MUST BE Extracted from a property file(i.e. local.properties) which is not included in repository
             // For the sake of simplicity, I hardcode the API key as-is
-            buildConfigField "String", "APIK_KEY_RIJKSMUSUEM", "\"dvFaFG86\""
+            buildConfigField "String", "API_KEY_RIJKSMUSUEM", "\"dvFaFG86\""
         }
     }
 
@@ -89,6 +89,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(':domain')
+    implementation project(':data')
 
     // Jetbrains Kotlin Dependencies
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"

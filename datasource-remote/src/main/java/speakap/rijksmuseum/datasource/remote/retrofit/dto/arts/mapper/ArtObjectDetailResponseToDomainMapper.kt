@@ -1,12 +1,12 @@
-package speakap.rijksmuseum.datasource.remote.retrofit.dto.art.mapper
+package speakap.rijksmuseum.datasource.remote.retrofit.dto.arts.mapper
 
-import speakap.rijksmueum.domain.datamodels.art.ArtObjectDetail
-import speakap.rijksmueum.domain.datamodels.art.Dating
-import speakap.rijksmueum.domain.datamodels.art.Labels
+import speakap.rijksmueum.domain.datamodels.arts.ArtObjectDetail
+import speakap.rijksmueum.domain.datamodels.arts.Dating
+import speakap.rijksmueum.domain.datamodels.arts.Labels
 import speakap.rijksmuseum.datasource.remote.retrofit.dto.Mapper
-import speakap.rijksmuseum.datasource.remote.retrofit.dto.art.DTOArtObjectDetailResponse
-import speakap.rijksmuseum.datasource.remote.retrofit.dto.art.DTODating
-import speakap.rijksmuseum.datasource.remote.retrofit.dto.art.DTOLabels
+import speakap.rijksmuseum.datasource.remote.retrofit.dto.arts.DTOArtObjectDetailResponse
+import speakap.rijksmuseum.datasource.remote.retrofit.dto.arts.DTODating
+import speakap.rijksmuseum.datasource.remote.retrofit.dto.arts.DTOLabels
 
 object ArtObjectDetailResponseToDomainMapper: Mapper<DTOArtObjectDetailResponse, ArtObjectDetail> {
 
