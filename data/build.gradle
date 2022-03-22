@@ -47,6 +47,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(':domain')
+    implementation project(':datasource-remote')
+    // TODO:: other datasource dependencies
 
     // Jetbrains Kotlin Dependencies
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
