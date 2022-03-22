@@ -1,8 +1,8 @@
-package speakap.rijksmuseum.datasource.remote.retrofit.dto.art.mapper
+package speakap.rijksmuseum.datasource.remote.retrofit.dto.arts.mapper
 
-import speakap.rijksmueum.domain.datamodels.art.WebImg
+import speakap.rijksmueum.domain.datamodels.arts.WebImg
 import speakap.rijksmuseum.datasource.remote.retrofit.dto.Mapper
-import speakap.rijksmuseum.datasource.remote.retrofit.dto.art.DTOWebImg
+import speakap.rijksmuseum.datasource.remote.retrofit.dto.arts.DTOWebImg
 
 object WebImgResponseToDomainMapper: Mapper<DTOWebImg, WebImg> {
     override fun map(input: DTOWebImg): WebImg =

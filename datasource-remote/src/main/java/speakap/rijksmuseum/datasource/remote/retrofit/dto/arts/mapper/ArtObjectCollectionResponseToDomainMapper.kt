@@ -1,10 +1,10 @@
-package speakap.rijksmuseum.datasource.remote.retrofit.dto.art.mapper
+package speakap.rijksmuseum.datasource.remote.retrofit.dto.arts.mapper
 
-import speakap.rijksmueum.domain.datamodels.art.ArtObject
-import speakap.rijksmueum.domain.datamodels.art.ArtObjectCollection
+import speakap.rijksmueum.domain.datamodels.arts.ArtObject
+import speakap.rijksmueum.domain.datamodels.arts.ArtObjectCollection
 import speakap.rijksmuseum.datasource.remote.retrofit.dto.Mapper
-import speakap.rijksmuseum.datasource.remote.retrofit.dto.art.DTOArtObject
-import speakap.rijksmuseum.datasource.remote.retrofit.dto.art.DTOArtObjectCollection
+import speakap.rijksmuseum.datasource.remote.retrofit.dto.arts.DTOArtObject
+import speakap.rijksmuseum.datasource.remote.retrofit.dto.arts.DTOArtObjectCollection
 
 object ArtObjectCollectionResponseToDomainMapper :
     Mapper<DTOArtObjectCollection, ArtObjectCollection> {

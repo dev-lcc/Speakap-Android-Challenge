@@ -2,8 +2,8 @@ package speakap.rijksmuseum.data.repository.arts
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import speakap.rijksmueum.domain.datamodels.art.ArtObjectCollection
-import speakap.rijksmueum.domain.datamodels.art.ArtObjectDetail
+import speakap.rijksmueum.domain.datamodels.arts.ArtObjectCollection
+import speakap.rijksmueum.domain.datamodels.arts.ArtObjectDetail
 import speakap.rijksmuseum.datasource.remote.ArtsRestApiDatasource
 
 class ArtsRepository(

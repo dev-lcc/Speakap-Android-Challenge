@@ -4,8 +4,8 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import speakap.rijksmuseum.datasource.remote.retrofit.dto.art.DTOArtObjectCollection
-import speakap.rijksmuseum.datasource.remote.retrofit.dto.art.DTOArtObjectDetailResponse
+import speakap.rijksmuseum.datasource.remote.retrofit.dto.arts.DTOArtObjectCollection
+import speakap.rijksmuseum.datasource.remote.retrofit.dto.arts.DTOArtObjectDetailResponse
 
 interface ArtsRetrofitService {
 

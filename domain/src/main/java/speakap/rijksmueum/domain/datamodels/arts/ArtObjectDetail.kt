@@ -1,4 +1,4 @@
-package speakap.rijksmueum.domain.datamodels.art
+package speakap.rijksmueum.domain.datamodels.arts
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

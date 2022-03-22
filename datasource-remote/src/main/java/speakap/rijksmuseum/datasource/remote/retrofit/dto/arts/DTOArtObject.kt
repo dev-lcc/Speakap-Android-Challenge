@@ -1,4 +1,4 @@
-package speakap.rijksmuseum.datasource.remote.retrofit.dto.art
+package speakap.rijksmuseum.datasource.remote.retrofit.dto.arts
 
 import kotlinx.serialization.Serializable
 

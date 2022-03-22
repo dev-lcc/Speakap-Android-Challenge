@@ -1,4 +1,4 @@
-package speakap.rijksmuseum.artobjectdetail
+package speakap.rijksmuseum.ui.artobjectdetail
 
 import android.os.Bundle
 import android.view.View

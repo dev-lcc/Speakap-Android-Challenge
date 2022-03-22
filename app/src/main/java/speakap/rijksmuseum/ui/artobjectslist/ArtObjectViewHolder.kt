@@ -6,7 +6,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import speakap.rijksmuseum.R
-import speakap.rijksmueum.domain.datamodels.art.ArtObject
 
 class ArtObjectViewHolder(
     val parent: ViewGroup,
@@ -29,9 +28,9 @@ class ArtObjectViewHolder(
     /*@BindView(R.id.itemArtObjectTextViewDescription)*/
     lateinit var textViewDescription: TextView
 
-    private var artObject: speakap.rijksmueum.domain.datamodels.art.ArtObject? = null
+    private var artObject: speakap.rijksmueum.domain.datamodels.arts.ArtObject? = null
 
-    fun bindTo(artObject: speakap.rijksmueum.domain.datamodels.art.ArtObject?) {
+    fun bindTo(artObject: speakap.rijksmueum.domain.datamodels.arts.ArtObject?) {
         this.artObject = artObject
 
         artObject?.let {
