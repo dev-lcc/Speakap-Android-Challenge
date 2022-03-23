@@ -15,6 +15,8 @@ class ArtsRepository(
     suspend fun getArtObjectCollections(
         page: Int,
         resultsPerPage: Int,
+        involvedMaker: String? = null,
+        datingPeriod: String? = null,
     ): ArtObjectCollection {
 
         // Perform Fetch from Remote Datasource
@@ -22,6 +24,8 @@ class ArtsRepository(
             remoteDatasource.getArtObjectCollection(
                 page = page,
                 resultsPerPage = resultsPerPage,
+                involvedMaker = involvedMaker,
+                datingPeriod = datingPeriod,
             )
         }
 

@@ -26,12 +26,16 @@ class ArtsRestApiDatasource(
     suspend fun getArtObjectCollection(
         page: Int,
         resultsPerPage: Int,
+        involvedMaker: String? = null,
+        datingPeriod: String? = null,
     ): ArtObjectCollection {
 
         val response = service.getArtObjectCollection(
             apiKey = apiKey,
             page = page,
             resultsPerPage = resultsPerPage,
+            involvedMaker = involvedMaker,
+            datingPeriod = datingPeriod,
         )
 
         if (response.isSuccessful) {

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import speakap.rijksmueum.domain.datamodels.arts.ArtObjectDetail
+import speakap.rijksmueum.domain.datamodels.arts.Dating
 import speakap.rijksmuseum.data.usecase.GetArtObjectDetail
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,11 +41,11 @@ class ArtObjectDetailViewModel(
         }
 
         override fun navigateQueryByDatingPeriod() {
-            val datingPeriod = artObjectDetail?.dating?.presentingDate ?: return
+            val dating = artObjectDetail?.dating ?: return
             // EMIT Navigate Query
             _singleEvent.tryEmit(
                 SingleEvent.NavigateQueryByDatingPeriod(
-                    query = datingPeriod
+                    query = dating
                 )
             )
         }
@@ -146,6 +147,8 @@ sealed class SingleEvent {
 
     data class NavigateQueryByInvolvedMaker(val query: String) : SingleEvent()
 
-    data class NavigateQueryByDatingPeriod(val query: String) : SingleEvent()
+    data class NavigateQueryByDatingPeriod(
+        val query: Dating
+    ) : SingleEvent()
 
 }
