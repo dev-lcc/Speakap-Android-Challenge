@@ -6,6 +6,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="toolbarNavigationButtonStyle">@style/ToolbarButtonNavigation</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -19,14 +21,18 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="ToolbarButtonNavigation" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="tint">@color/colorAccent</item>
+    </style>
+
     <style name="Theme.CollapsingToolbar" parent="Widget.Design.CollapsingToolbar">
         <item name="android:fitsSystemWindows">true</item>
         <item name="expandedTitleMarginTop">48dp</item>
         <item name="android:clipToPadding">true</item>
         <item name="titleEnabled">true</item>
         <item name="expandedTitleGravity">left|bottom</item>
-        <item name="collapsedTitleGravity">center_horizontal</item>
-        <item name="collapsedTitleTextAppearance">@style/Theme.AppBar.TitleTextAppearance.Collapsed</item>
+        <item name="collapsedTitleGravity">left</item>
+        <!--<item name="collapsedTitleTextAppearance">@style/Theme.AppBar.TitleTextAppearance.Collapsed</item>-->
         <item name="expandedTitleTextAppearance">@style/Theme.AppBar.TitleTextAppearance.Expanded</item>
         <item name="layout_scrollFlags">scroll|exitUntilCollapsed|snap</item>
     </style>
@@ -44,12 +50,12 @@
     </style>
 
     <style name="Theme.AppBar.TitleTextAppearance.Collapsed" parent="TextAppearance.AppCompat.Title">
-        <item name="android:textColor">?colorPrimaryVariant</item>
+        <item name="android:textColor">@color/colorPrimaryDark<!--?colorPrimaryVariant--></item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="Theme.AppBar.TitleTextAppearance.Expanded" parent="TextAppearance.Design.CollapsingToolbar.Expanded">
-        <item name="android:textColor">?colorPrimaryVariant</item>
+        <item name="android:textColor">@color/light_gray<!--?colorPrimaryVariant--></item>
         <item name="android:textStyle">bold</item>
     </style>
 

@@ -22,12 +22,12 @@ interface ArtsRetrofitService {
 
     @GET("en/collection/{objectNumber}")
     suspend fun getArtObjectDetail(
+        @Path("objectNumber") objectNumber: String,
         @Query("key") apiKey: String,
         /**
          * "json"|"xml"
          */
         @Query("format") format: String = "json",
-        @Path("objectNumber") objectNumber: String
     ): Response<DTOArtObjectDetailResponse>
 
 }

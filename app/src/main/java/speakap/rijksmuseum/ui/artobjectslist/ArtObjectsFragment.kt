@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import reactivecircus.flowbinding.swiperefreshlayout.refreshes
 import speakap.rijksmueum.domain.datamodels.arts.ArtObject
 import speakap.rijksmuseum.R
 import speakap.rijksmuseum.commons.BaseFragment
@@ -54,7 +55,9 @@ class ArtObjectsFragment : BaseFragment() {
 
         artObjectsAdapter = null
 
-        snackbarErrorFetchNextPage?.dismiss()
+        if(snackbarErrorFetchNextPage?.isShown == true) {
+            snackbarErrorFetchNextPage?.dismiss()
+        }
         snackbarErrorFetchNextPage = null
     }
 
@@ -100,6 +103,13 @@ class ArtObjectsFragment : BaseFragment() {
                 attemptNextPageFlow.tryEmit(page)
             }
         }
+
+        binding.swipeRefresh.refreshes()
+            .onEach {
+                // Attempt refresh
+                viewModel.intent.refresh()
+            }
+            .launchIn(lifecycleScope)
 
         attemptNextPageFlow
             .debounce(350)
