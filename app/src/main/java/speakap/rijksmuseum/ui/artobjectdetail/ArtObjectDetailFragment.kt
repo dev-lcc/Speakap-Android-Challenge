@@ -13,12 +13,15 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import reactivecircus.flowbinding.android.view.clicks
 import reactivecircus.flowbinding.appcompat.navigationClicks
 import reactivecircus.flowbinding.swiperefreshlayout.refreshes
 import speakap.rijksmuseum.R
 import speakap.rijksmuseum.commons.BaseFragment
 import speakap.rijksmuseum.commons.utils.throttleFirst
 import speakap.rijksmuseum.databinding.FragmentArtObjectDetailBinding
+import speakap.rijksmuseum.ui.artobjectquery.ArtObjectQueryFragment
+import speakap.rijksmuseum.ui.artobjectquery.QueryType
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -86,6 +89,28 @@ class ArtObjectDetailFragment : BaseFragment() {
             }
             .launchIn(lifecycleScope)
 
+        //
+        // On Tap Maker
+        //
+        binding.fragmentDetailTextViewMaker.clicks()
+            .throttleFirst(1000L)
+            .onEach {
+                // Attempt Query By Involved Maker
+                viewModel.intent.navigateQueryByInvolvedMaker()
+            }
+            .launchIn(lifecycleScope)
+
+        //
+        // On Tap Dating Period
+        //
+        binding.fragmentDetailTextViewPeriod.clicks()
+            .throttleFirst(1000L)
+            .onEach {
+                // Attempt Query By Dating Period
+                viewModel.intent.navigateQueryByDatingPeriod()
+            }
+            .launchIn(lifecycleScope)
+
         ////////////////////////////////////
         // Observe ViewState
         ////////////////////////////////////
@@ -142,10 +167,24 @@ class ArtObjectDetailFragment : BaseFragment() {
                 }
             }
             is SingleEvent.NavigateQueryByDatingPeriod -> {
-                // TODO:: SingleEvent.NavigateQueryByDatingPeriod
+                if(appNavController.currentDestination?.id == R.id.fragmentArtObjectDetail) {
+                    appNavController.navigate(
+                        R.id.action_fragmentArtObjectDetail_to_fragmentArtObjectQuery,
+                        ArtObjectQueryFragment.createInputArguments(
+                            queryType = QueryType.ByDatingPeriod(event.query)
+                        )
+                    )
+                }
             }
             is SingleEvent.NavigateQueryByInvolvedMaker -> {
-                // TODO:: SingleEvent.NavigateQueryByInvolvedMaker
+                if(appNavController.currentDestination?.id == R.id.fragmentArtObjectDetail) {
+                    appNavController.navigate(
+                        R.id.action_fragmentArtObjectDetail_to_fragmentArtObjectQuery,
+                        ArtObjectQueryFragment.createInputArguments(
+                            queryType = QueryType.ByInvolvedMaker(event.query)
+                        )
+                    )
+                }
             }
         }
     }

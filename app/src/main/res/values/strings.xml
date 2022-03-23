@@ -5,5 +5,7 @@
     <string name="something_went_wrong">Something went wrong. Please try again…</string>
 
     <string name="art_objects_empty_state">Nothing to display.\nPlease try again later…</string>
+    <string name="art_objects_query_by_involved_maker">By Involved Maker</string>
+    <string name="art_objects_query_by_dating_period">By Dating Period</string>
 
 </resources>

@@ -18,6 +18,8 @@ interface ArtsRetrofitService {
         @Query("format") format: String = "json",
         @Query("p") page: Int,
         @Query("ps") resultsPerPage: Int,
+        @Query("involvedMaker") involvedMaker: String? = null,
+        @Query("f.dating.period") datingPeriod: String? = null,
     ): Response<DTOArtObjectCollection>
 
     @GET("en/collection/{objectNumber}")

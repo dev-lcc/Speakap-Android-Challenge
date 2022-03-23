@@ -15,6 +15,8 @@ class GetArtObjectCollections(
     suspend operator fun invoke(
         page: Int,
         resultsPerPage: Int,
+        involvedMaker: String? = null,
+        datingPeriod: String? = null,
     ): Flow<Result> = flow {
         val isFetchMore = page > 1
 
@@ -29,6 +31,8 @@ class GetArtObjectCollections(
         val response = repository.getArtObjectCollections(
             page = page,
             resultsPerPage = resultsPerPage,
+            involvedMaker = involvedMaker,
+            datingPeriod = datingPeriod,
         )
 
         if (!isFetchMore && response.artObjects.isEmpty()) {

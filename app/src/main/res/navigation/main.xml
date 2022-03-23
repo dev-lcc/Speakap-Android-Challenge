@@ -15,7 +15,8 @@
             android:id="@+id/action_fragmentArtObjects_to_fragmentArtObjectDetail"
             app:destination="@+id/fragmentArtObjectDetail"
             app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:launchSingleTop="true"/>
 
     </fragment>
 
@@ -28,7 +29,8 @@
             android:id="@+id/action_fragmentArtObjectDetail_to_fragmentArtObjectQuery"
             app:destination="@+id/fragmentArtObjectQuery"
             app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:launchSingleTop="true" />
 
     </fragment>
 
@@ -36,6 +38,13 @@
         android:id="@+id/fragmentArtObjectQuery"
         android:name="speakap.rijksmuseum.ui.artobjectquery.ArtObjectQueryFragment"
         tools:layout="@layout/fragment_art_object_query">
+
+        <action
+            android:id="@+id/action_fragmentArtObjectQuery_to_fragmentArtObjectDetail"
+            app:destination="@+id/fragmentArtObjectDetail"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:launchSingleTop="true"/>
 
     </fragment>
 
