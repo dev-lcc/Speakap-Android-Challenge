@@ -1,49 +1,183 @@
 package speakap.rijksmuseum.ui.artobjectslist
 
+import android.annotation.SuppressLint
+import android.os.AsyncTask
+import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.annotation.MainThread
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import speakap.rijksmueum.domain.datamodels.arts.ArtObject
+import speakap.rijksmuseum.databinding.ItemArtObjectBinding
+import speakap.rijksmuseum.databinding.ItemListLoadMoreBinding
+
+typealias OnTapArtObject = ((ArtObject) -> Unit)?
 
 class ArtObjectAdapter(
-    val onClick : (objectNumber : String) -> Unit
-) : RecyclerView.Adapter<ArtObjectViewHolder>() {
+    val onTapArtObject: OnTapArtObject? = null,
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    override fun getItemCount(): Int = data.size
+    private var items = listOf<ArtObject>()
+    private var loadingNextPage: Boolean = false
 
-    var data = arrayListOf<speakap.rijksmueum.domain.datamodels.arts.ArtObject>()
+    override fun getItemCount(): Int = when (loadingNextPage) {
+        true -> items.size + 1
+        false -> items.size
+    }
+
+    /**
+     * Each time data is set, we update this variable so that if DiffUtil calculation returns
+     * after repetitive updates, we can ignore the old calculation
+     */
+    private var dataVersion = 0
+
+    @Suppress("DEPRECATION")
+    @SuppressLint("StaticFieldLeak")
+    @MainThread
+    fun replace(update: List<ArtObject>) {
+        dataVersion++
+        if (items.isEmpty()) {
+            items = update
+            notifyDataSetChanged()
+        } else if (update.isEmpty()) {
+            val oldSize = items.size
+            items = listOf()
+            notifyItemRangeRemoved(0, oldSize)
+        } else {
+            val startVersion = dataVersion
+            val oldItems = ArrayList(items)
+
+            object : AsyncTask<Void, Void, DiffUtil.DiffResult>() {
+                override fun doInBackground(vararg voids: Void): DiffUtil.DiffResult {
+                    return DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                        override fun getOldListSize(): Int = oldItems.size
+                        override fun getNewListSize(): Int = update.size
+
+                        override fun areItemsTheSame(
+                            oldItemPosition: Int,
+                            newItemPosition: Int
+                        ): Boolean {
+                            val oldItem = oldItems[oldItemPosition]
+                            val newItem = update[newItemPosition]
+                            return oldItem.id == newItem.id
+                        }
+
+                        override fun areContentsTheSame(
+                            oldItemPosition: Int,
+                            newItemPosition: Int
+                        ): Boolean {
+                            val oldItem = oldItems[oldItemPosition]
+                            val newItem = update[newItemPosition]
+                            return oldItem == newItem
+                        }
+                    })
+                }
+
+                override fun onPostExecute(diffResult: DiffUtil.DiffResult) {
+                    if (startVersion != dataVersion) {
+                        // ignore update
+                        return
+                    }
+                    items = update
+                    diffResult.dispatchUpdatesTo(this@ArtObjectAdapter)
+                }
+            }
+                .execute()
+        }
+    }
+
+    fun setLoading(isLoading: Boolean) {
+        val prevState = loadingNextPage
+        loadingNextPage = isLoading
+
+        try {
+            if (!prevState && isLoading) {
+                notifyItemInserted(items.size)
+            } else if (!isLoading) {
+                notifyItemRemoved(items.size)
+            }
+        } catch (_: Throwable) {
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int =
+        when (loadingNextPage) {
+            true -> {
+                if (position < items.size) VIEW_TYPE_ITEM
+                else VIEW_TYPE_LOAD_MORE
+            }
+            false -> VIEW_TYPE_ITEM
+        }
 
     override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int
-    ): ArtObjectViewHolder {
-        return ArtObjectViewHolder(parent, onClick)
-    }
+        parent: ViewGroup,
+        viewType: Int
+    ): RecyclerView.ViewHolder =
+        when (viewType) {
+            VIEW_TYPE_ITEM -> ArtObjectViewHolder(
+                binding = ItemArtObjectBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false,
+                ),
+                onTapArtObject = onTapArtObject,
+            )
+            VIEW_TYPE_LOAD_MORE -> LoadMoreViewHolder(
+                ItemListLoadMoreBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false,
+                )
+            )
+            else -> object : RecyclerView.ViewHolder(parent) {}
+        }
 
     override fun onBindViewHolder(
-            holder: ArtObjectViewHolder,
-            position: Int
-    ) = holder.bindTo(getItem(position))
+        holder: RecyclerView.ViewHolder,
+        position: Int
+    ) {
+        when (holder) {
+            is LoadMoreViewHolder -> {
+            }
+            is ArtObjectViewHolder -> {
+                position.takeIf { it < items.size } ?: return
 
-    private fun getItem(position: Int): speakap.rijksmueum.domain.datamodels.arts.ArtObject? = data[position]!!
-
-    fun addData(artObjects: ArrayList<speakap.rijksmueum.domain.datamodels.arts.ArtObject>) {
-        val diffResult = DiffUtil.calculateDiff(Diff(data, artObjects))
-        this.data = artObjects
-        diffResult.dispatchUpdatesTo(this)
+                val item = items[position]
+                holder.bindTo(item)
+            }
+        }
     }
 
-    class Diff(private val old: List<speakap.rijksmueum.domain.datamodels.arts.ArtObject>, private val newItem: List<speakap.rijksmueum.domain.datamodels.arts.ArtObject>) : DiffUtil.Callback() {
-        override fun areItemsTheSame(oldItemPos: Int, newPosition: Int): Boolean =
-                old[oldItemPos].id == newItem[newPosition].id
+    inner class ArtObjectViewHolder(
+        private val binding: ItemArtObjectBinding,
+        private val onTapArtObject: OnTapArtObject? = null
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                old[oldItemPosition] == newItem[newItemPosition]
+        fun bindTo(artObject: ArtObject) {
+            binding.itemArtObjectTextViewMaker.text = artObject.principalOrFirstMaker
+            binding.itemArtObjectTextViewDescription.text = artObject.title
 
-        override fun getOldListSize(): Int = old.size
+            // Load Art Object Image
+            artObject.webImage?.url?.let { imageUrl ->
+                Glide.with(binding.root.context)
+                    .load(imageUrl)
+                    .into(binding.itemArtObjectImageView)
+            }
 
-        override fun getNewListSize(): Int = newItem.size
+            // On-tap item
+            binding.root.setOnClickListener { onTapArtObject?.invoke(artObject) }
+        }
+
     }
 
+    inner class LoadMoreViewHolder(
+        binding: ItemListLoadMoreBinding
+    ) : RecyclerView.ViewHolder(binding.root)
 
+    companion object {
+        private const val VIEW_TYPE_ITEM = 0x00
+        private const val VIEW_TYPE_LOAD_MORE = 0x01
+    }
 
 }

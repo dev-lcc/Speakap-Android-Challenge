@@ -13,15 +13,15 @@ class ArtsRepository(
 ) {
 
     suspend fun getArtObjectCollections(
-        offset: Int,
-        limit: Int,
+        page: Int,
+        resultsPerPage: Int,
     ): ArtObjectCollection {
 
         // Perform Fetch from Remote Datasource
         val response = withContext(Dispatchers.IO) {
             remoteDatasource.getArtObjectCollection(
-                offset = offset,
-                limit = limit,
+                page = page,
+                resultsPerPage = resultsPerPage,
             )
         }
 

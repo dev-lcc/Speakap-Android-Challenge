@@ -20,14 +20,10 @@ class RepositoryModule(
         }
         // TODO:: Add more Repository class here...
 
-    } + module {
-        single {
-            RemoteDatasourceModule(
-                restApiUrlEndpoint = restApiUrlEndpoint,
-                apiKey = apiKey,
-                isDebug = isDebug,
-            )
-        }
-    }
+    } + RemoteDatasourceModule(
+            restApiUrlEndpoint = restApiUrlEndpoint,
+            apiKey = apiKey,
+            isDebug = isDebug,
+        ).build()
 
 }

@@ -16,8 +16,8 @@ interface ArtsRetrofitService {
          * "json"|"xml"
          */
         @Query("format") format: String = "json",
-        @Query("offset") offset: Int,
-        @Query("limit") limit: Int,
+        @Query("p") page: Int,
+        @Query("ps") resultsPerPage: Int,
     ): Response<DTOArtObjectCollection>
 
     @GET("en/collection/{objectNumber}")

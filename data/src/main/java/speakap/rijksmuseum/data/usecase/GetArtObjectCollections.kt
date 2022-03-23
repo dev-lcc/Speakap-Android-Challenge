@@ -13,17 +13,22 @@ class GetArtObjectCollections(
 ) {
 
     suspend operator fun invoke(
-        offset: Int,
-        limit: Int,
+        page: Int,
+        resultsPerPage: Int,
     ): Flow<Result> = flow {
-        val isFetchMore = offset > 1
+        val isFetchMore = page > 1
 
         // EMIT In-Progress
-        emit(Result.Loading)
+        emit(
+            when(isFetchMore) {
+                false -> Result.Loading
+                true -> Result.LoadingNextPage
+            }
+        )
 
         val response = repository.getArtObjectCollections(
-            offset = offset,
-            limit = limit,
+            page = page,
+            resultsPerPage = resultsPerPage,
         )
 
         if (!isFetchMore && response.artObjects.isEmpty()) {
@@ -61,6 +66,8 @@ class GetArtObjectCollections(
 
     sealed class Result {
         object Loading : Result()
+
+        object LoadingNextPage : Result()
 
         data class Success(
             val data: ArtObjectCollection
