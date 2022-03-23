@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import speakap.rijksmuseum.commons.BaseFragment
 
 class ArtObjectDetailFragment : BaseFragment() {
@@ -73,6 +74,14 @@ class ArtObjectDetailFragment : BaseFragment() {
                 }
             }
         }
+
+
+        fun createInputArguments(
+            objectNumber: String
+        ): Bundle =
+            bundleOf(
+                KEY_OBJECT_NUMBER to objectNumber
+            )
     }
 
     /*@OnClick(R.id.fragmentDetailTextViewPeriod)*/

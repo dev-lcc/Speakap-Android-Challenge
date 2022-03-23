@@ -18,20 +18,20 @@ class ArtsRestApiDatasource(
      * Method GET
      * Endpoint /api/en/collection
      * Query String Parameters
-     * @param   offset  Starting index
-     * @param   limit  Number of items requested
+     * @param   page  Starting index
+     * @param   resultsPerPage  Number of items requested
      *
      * @return  Art Object Collection
      */
     suspend fun getArtObjectCollection(
-        offset: Int,
-        limit: Int,
+        page: Int,
+        resultsPerPage: Int,
     ): ArtObjectCollection {
 
         val response = service.getArtObjectCollection(
             apiKey = apiKey,
-            offset = offset,
-            limit = limit,
+            page = page,
+            resultsPerPage = resultsPerPage,
         )
 
         if (response.isSuccessful) {

@@ -13,7 +13,9 @@
 
         <action
             android:id="@+id/action_fragmentArtObjects_to_fragmentArtObjectDetail"
-            app:destination="@+id/fragmentArtObjectDetail" />
+            app:destination="@+id/fragmentArtObjectDetail"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
 
     </fragment>
 
@@ -24,7 +26,9 @@
 
         <action
             android:id="@+id/action_fragmentArtObjectDetail_to_fragmentArtObjectQuery"
-            app:destination="@+id/fragmentArtObjectQuery" />
+            app:destination="@+id/fragmentArtObjectQuery"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
 
     </fragment>
 

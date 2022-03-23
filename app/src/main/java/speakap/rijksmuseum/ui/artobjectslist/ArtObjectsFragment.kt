@@ -1,24 +1,61 @@
 package speakap.rijksmuseum.ui.artobjectslist
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import speakap.rijksmueum.domain.datamodels.arts.ArtObject
 import speakap.rijksmuseum.R
 import speakap.rijksmuseum.commons.BaseFragment
 import speakap.rijksmuseum.commons.utils.EndlessRecyclerViewScrollListener
+import speakap.rijksmuseum.databinding.FragmentArtObjectsBinding
+import speakap.rijksmuseum.ui.artobjectdetail.ArtObjectDetailFragment
+import timber.log.Timber
 
 class ArtObjectsFragment : BaseFragment() {
 
-    private lateinit var artObjectsAdapter: ArtObjectAdapter
+    private val binding: FragmentArtObjectsBinding by viewBinding(FragmentArtObjectsBinding::bind)
+    private val viewModel: ArtObjectsViewModel by viewModel()
 
-//    override fun layoutId(): Int = R.layout.fragment_art_objects
+    private var artObjectsAdapter: ArtObjectAdapter? = null
+    private var scrollListener: EndlessRecyclerViewScrollListener? = null
 
-    private var period = -1
+    private val attemptNextPageFlow = MutableSharedFlow<Int>(extraBufferCapacity = 64)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        period = arguments?.getInt(KEY_PERIOD, -1) ?: -1
+    private var snackbarErrorFetchNextPage: Snackbar? = null
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
+        inflater.inflate(
+            R.layout.fragment_art_objects, container, false
+        )
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        if (scrollListener != null) {
+            binding.fragmentArtObjectsRecyclerView.removeOnScrollListener(scrollListener!!)
+        }
+        scrollListener = null
+
+        artObjectsAdapter = null
+
+        snackbarErrorFetchNextPage?.dismiss()
+        snackbarErrorFetchNextPage = null
     }
 
     override fun onViewCreated(
@@ -26,51 +63,117 @@ class ArtObjectsFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+        snackbarErrorFetchNextPage = Snackbar.make(
+            view,
+            R.string.something_went_wrong,
+            Snackbar.LENGTH_INDEFINITE
+        )
+            .setAction(R.string.btn_retry) {
+                // Retry attempt fetch next page
+                viewModel.intent.fetchNextPage()
+            }
+
         artObjectsAdapter = ArtObjectAdapter(
-//            picasso = picasso,
-            onClick = {
-//                if (activity is MainActivity) {
-//                    (activity as MainActivity).openDetailPage(it)
-//                }
+            onTapArtObject = { item: ArtObject ->
+                Timber.d("onTapArtObject() -> item = $item")
+
+                val objectNumber = item.objectNumber ?: return@ArtObjectAdapter
+                if (appNavController.currentDestination?.id == R.id.fragmentArtObjects) {
+                    appNavController.navigate(
+                        R.id.action_fragmentArtObjects_to_fragmentArtObjectDetail,
+                        ArtObjectDetailFragment.createInputArguments(objectNumber = objectNumber)
+                    )
+                }
+
             }
         )
-        val layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
-//        objects.layoutManager = layoutManager
-//        objects.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-//        objects.setHasFixedSize(true)
-//        objects.adapter = artObjectsAdapter
-//
-//        objects.addOnScrollListener(object : EndlessRecyclerViewScrollListener(layoutManager) {
-//            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
-////                getPresenter().loadMore(page + 1, period)
-//            }
-//        })
+        val rvLayoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        with(binding.fragmentArtObjectsRecyclerView) {
+            layoutManager = rvLayoutManager
+            setHasFixedSize(true)
+            adapter = artObjectsAdapter
+        }
+
+        scrollListener = object : EndlessRecyclerViewScrollListener(rvLayoutManager) {
+            override fun onLoadMore(page: Int, totalItemsCount: Int, view: RecyclerView?) {
+                attemptNextPageFlow.tryEmit(page)
+            }
+        }
+
+        attemptNextPageFlow
+            .debounce(350)
+            .onEach { page ->
+                Timber.d("attemptNextPageFlow() -> page = $page")
+                viewModel.intent.fetchNextPage()
+            }
+            .launchIn(lifecycleScope)
+
+        ////////////////////////////////////
+        // Observe ViewState
+        ////////////////////////////////////
+        viewModel.viewState
+            .onEach(::render)
+            .launchIn(lifecycleScope)
+
+        ////////////////////////////////////
+        // Observe Single Event(s)
+        ////////////////////////////////////
+        viewModel.singleEvent
+            .onEach(::takeSingleEvent)
+            .launchIn(lifecycleScope)
+
     }
 
-//    override fun fillArtObjectsList(artObjects: ArrayList<ArtObject>) {
-//        artObjects.addAll(0, artObjectsAdapter.data)
-//        artObjectsAdapter.addData(artObjects)
-//    }
-//
-//    override fun addToArtObjectsList(artObjects: ArrayList<ArtObject>) {
-//        artObjects.addAll(0, artObjectsAdapter.data)
-//        artObjectsAdapter.addData(artObjects)
-//    }
+    private suspend fun render(viewState: ViewState) {
+        Timber.d("render() -> viewState = $viewState")
 
-    companion object {
+        // Progress Indicator
+        binding.swipeRefresh.isRefreshing = viewState.isLoading
+        artObjectsAdapter?.setLoading(viewState.isLoadingNextPage)
 
-        private const val KEY_PERIOD = "keyPeriod"
+        if (!viewState.isEmpty) {
+            artObjectsAdapter?.replace(viewState.artObjects)
 
-        fun newInstance(
-            period: Int = -1
-        ): ArtObjectsFragment = ArtObjectsFragment().apply {
-            arguments = Bundle().apply {
-                putInt(KEY_PERIOD, period)
+            binding.fragmentArtObjectsRecyclerView.clearOnScrollListeners()
+            if (viewState.hasMoreToFetch) {
+                if (scrollListener != null) {
+                    binding.fragmentArtObjectsRecyclerView.addOnScrollListener(scrollListener!!)
+                }
+            }
+
+            binding.actvEmptyStateInfo.visibility = View.GONE
+            binding.fragmentArtObjectsRecyclerView.visibility = View.VISIBLE
+        } else {
+            binding.fragmentArtObjectsRecyclerView.visibility = View.GONE
+            binding.actvEmptyStateInfo.visibility = View.VISIBLE
+        }
+
+    }
+
+    private suspend fun takeSingleEvent(event: SingleEvent) {
+        Timber.d("takeSingleEvent() -> event = $event")
+
+        when (event) {
+            is SingleEvent.ErrorGetArtObjectCollections -> {
+                // DISPLAY Error Prompt
+                Toast.makeText(
+                    requireContext(),
+                    R.string.something_went_wrong,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            is SingleEvent.ErrorGetArtObjectCollectionsNextPage -> {
+                // DISPLAY Error Snackbar prompt
+                snackbarErrorFetchNextPage ?: return
+                snackbarErrorFetchNextPage?.let {
+                    with(it) {
+                        if (isShown) dismiss()
+                        show()
+                    }
+                }
             }
         }
     }
+
 }
