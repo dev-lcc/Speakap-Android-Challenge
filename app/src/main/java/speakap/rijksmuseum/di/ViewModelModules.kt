@@ -16,10 +16,10 @@ object ViewModelModules {
             )
         }
 
-        viewModel {
+        viewModel { (objectNumber: String) ->
             ArtObjectDetailViewModel(
+                objectNumber = objectNumber,
                 getArtObjectDetail = get(),
-                savedStateHandle = get(),
             )
         }
 

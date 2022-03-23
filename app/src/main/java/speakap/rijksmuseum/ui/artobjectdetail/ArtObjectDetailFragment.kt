@@ -1,80 +1,159 @@
 package speakap.rijksmuseum.ui.artobjectdetail
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
+import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
+import reactivecircus.flowbinding.appcompat.navigationClicks
+import reactivecircus.flowbinding.swiperefreshlayout.refreshes
+import speakap.rijksmuseum.R
 import speakap.rijksmuseum.commons.BaseFragment
+import speakap.rijksmuseum.commons.utils.throttleFirst
+import speakap.rijksmuseum.databinding.FragmentArtObjectDetailBinding
+import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ArtObjectDetailFragment : BaseFragment() {
 
-    /*@BindView(R.id.fragmentDetailTextViewMaker)*/
-    lateinit var textViewMaker: TextView
+    private val binding: FragmentArtObjectDetailBinding by viewBinding(
+        FragmentArtObjectDetailBinding::bind
+    )
+    private val viewModel: ArtObjectDetailViewModel by viewModel {
+        val objectNumber = if (arguments?.containsKey(KEY_OBJECT_NUMBER) == true) {
+            requireArguments().getString(KEY_OBJECT_NUMBER, "")!!
+        } else ""
 
-    /*@BindView(R.id.fragmentDetailTextViewDate)*/
-    lateinit var textViewDate: TextView
-
-    /*@BindView(R.id.fragmentDetailTextViewDescription)*/
-    lateinit var textViewDescription: TextView
-
-    /*@BindView(R.id.fragmentDetailImageView)*/
-    lateinit var imageViewArt: ImageView
-
-    /*@BindView(R.id.fragmentDetailTextViewPeriod)*/
-    lateinit var textViewPeriod: TextView
-
-    private var period = -1
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        objectNumber = requireArguments().getString(KEY_OBJECT_NUMBER) ?: ""
+        parametersOf(objectNumber)
     }
 
-    private var objectNumber = ""
+    private var errorGetArtObjectDetailSnackbar: Snackbar? = null
 
-//    override fun layoutId(): Int = R.layout.fragment_art_object_detail
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? =
+        inflater.inflate(
+            R.layout.fragment_art_object_detail, container, false
+        )
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        if (errorGetArtObjectDetailSnackbar?.isShown == true) {
+            errorGetArtObjectDetailSnackbar?.dismiss()
+        }
+        errorGetArtObjectDetailSnackbar = null
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        getPresenter().onViewCreated(objectNumber)
+
+        errorGetArtObjectDetailSnackbar =
+            Snackbar.make(
+                view,
+                R.string.something_went_wrong,
+                Snackbar.LENGTH_INDEFINITE
+            )
+                .setAction(R.string.btn_retry) {
+                    viewModel.intent.refresh()
+                }
+
+        binding.toolbar.navigationClicks()
+            .throttleFirst(1000L)
+            .onEach {
+                appNavController.popBackStack()
+            }
+            .launchIn(lifecycleScope)
+
+        //
+        // On Swipe Refresh
+        //
+        binding.swipeRefresh.refreshes()
+            .onEach {
+                // Attempt refresh
+                viewModel.intent.refresh()
+            }
+            .launchIn(lifecycleScope)
+
+        ////////////////////////////////////
+        // Observe ViewState
+        ////////////////////////////////////
+        viewModel.viewState
+            .onEach(::render)
+            .launchIn(lifecycleScope)
+
+        ////////////////////////////////////
+        // Observe Single Event(s)
+        ////////////////////////////////////
+        viewModel.singleEvent
+            .onEach(::takeSingleEvent)
+            .launchIn(lifecycleScope)
     }
 
-//    override fun setTitels(title: String) {
-//    }
-//
-//    override fun setMaker(makerLine: String) {
-//        textViewMaker.text = makerLine
-//    }
-//
-//    override fun setDescriptionChars(description: String) {
-//        textViewDescription.text = description
-//    }
-//
-//    override fun showJpeg(url: String) {
-//        picasso.load(url).into(imageViewArt)
-//    }
-//
-//    override fun setDate(presentingDate: String) {
-//        textViewDate.text = presentingDate
-//    }
-//
-//    override fun setPeriod(period: Int) {
-//        this.period = period
-//        textViewPeriod.text = "$period"
-//    }
+    private suspend fun render(viewState: ViewState) {
+        Timber.d("render() -> viewState = $viewState")
+
+        binding.swipeRefresh.isRefreshing = viewState.isLoading
+
+        // Appbar Title
+        binding.collapsingToolbarLayout.title = viewState.title
+
+        // Banner Image
+        viewState.bannerImageUrl?.let { bannerImageUrl ->
+            Glide.with(requireContext())
+                .load(bannerImageUrl)
+                .into(binding.fragmentDetailImageView)
+        }
+
+        // Maker
+        binding.fragmentDetailTextViewMaker.text = viewState.principalMaker
+        // Description
+        binding.fragmentDetailTextViewDescription.text = viewState.description
+        // Date
+        binding.fragmentDetailTextViewDate.text = viewState.acquisitionDate
+            ?.let(ART_DATE_FORMATTER::format)
+        // Period Date
+        binding.fragmentDetailTextViewPeriod.text = viewState.periodDate
+
+    }
+
+    private suspend fun takeSingleEvent(event: SingleEvent) {
+        Timber.d("takeSingleEvent() -> event = $event")
+
+        when (event) {
+            is SingleEvent.ErrorGetArtObjectDetail -> {
+                // DISPLAY Error Prompt
+                errorGetArtObjectDetailSnackbar?.let { snackbar ->
+                    with(snackbar) {
+                        if (isShown) dismiss()
+                        show()
+                    }
+                }
+            }
+            is SingleEvent.NavigateQueryByDatingPeriod -> {
+                // TODO:: SingleEvent.NavigateQueryByDatingPeriod
+            }
+            is SingleEvent.NavigateQueryByInvolvedMaker -> {
+                // TODO:: SingleEvent.NavigateQueryByInvolvedMaker
+            }
+        }
+    }
 
     companion object {
         private const val KEY_OBJECT_NUMBER = "keyObjectNumber"
 
-        fun newInstance(objectNumber: String): ArtObjectDetailFragment {
-            return ArtObjectDetailFragment().apply {
-                arguments = Bundle().apply {
-                    this.putString(KEY_OBJECT_NUMBER, objectNumber)
-                }
-            }
-        }
-
+        private val ART_DATE_FORMATTER = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
 
         fun createInputArguments(
             objectNumber: String
@@ -82,10 +161,5 @@ class ArtObjectDetailFragment : BaseFragment() {
             bundleOf(
                 KEY_OBJECT_NUMBER to objectNumber
             )
-    }
-
-    /*@OnClick(R.id.fragmentDetailTextViewPeriod)*/
-    fun onPeriodClicked() {
-//        (activity as? MainActivity)!!.openListingPage(period)
     }
 }
